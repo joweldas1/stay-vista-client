@@ -2,9 +2,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FcGoogle } from 'react-icons/fc'
 import useAuth from '../../hooks/useAuth'
 import {toast} from 'react-hot-toast'
+import { TbFidgetSpinner } from 'react-icons/tb'
 
 const Login = () => {
-  const {signIn,signInWithGoogle} = useAuth()
+  const {signIn,signInWithGoogle,loading} = useAuth()
   const navigate = useNavigate()
   const handleOnLogin=async(e)=>{
     e.preventDefault()
@@ -85,7 +86,10 @@ const Login = () => {
               type='submit'
               className='bg-rose-500 w-full rounded-md py-3 text-white'
             >
-              Continue
+              {
+                loading?<TbFidgetSpinner className='animate-spin m-auto'/> :"Continue"
+              }
+        
             </button>
           </div>
         </form>

@@ -45,7 +45,7 @@ export const router = createBrowserRouter([
         element:<AddRoom/>
       },
       {
-        index:'my-listings',
+        path:'my-listings',
         element:<MyListings/>
       },
     ]

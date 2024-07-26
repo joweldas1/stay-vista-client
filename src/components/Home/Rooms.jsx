@@ -17,12 +17,10 @@ const Rooms = () => {
     queryKey:['rooms',category],
     queryFn:async()=>{ 
       const {data} = await axiosCommon.get(`/rooms?category=${category}`) 
-      console.log(data,'---->');
       return data
     }  
   })
  
-  console.log(rooms);
 
 
 

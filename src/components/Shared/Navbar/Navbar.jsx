@@ -4,13 +4,50 @@ import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import useAuth from '../../../hooks/useAuth'
 import avatarImg from '../../../assets/images/placeholder.jpg'
+import HostModal from '../Modal/HostModal'
+import useAxiosCommon from '../../../hooks/useAxios'
+import useAxiosSecure from '../../../hooks/useAxiosSecure'
+import toast from 'react-hot-toast'
 
 const Navbar = () => {
   const { user, logOut } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
+  const axiosSecure = useAxiosSecure()
 
+//for modal
+  const [isModalOpen,setIsModalOpen] = useState(false)
+
+  const closeModel=()=>{
+    setIsModalOpen(false)
+  }
+// update user role
+  const modalHandler =async () =>{
+    closeModel()
+    try {
+      const currentUser = {
+        email:user?.email,
+        role:'guest',
+        status:'Requested'
+      }
+      const {data} =  await axiosSecure.put(`/user`,currentUser)
+      if(data.modifiedCount>0){
+        toast.success("Become Host Request Done")
+      }
+      else{
+        toast.success("Please , wait for admin approval")
+      }
+      
+      console.log(data,'data');
+    } catch (error) {
+console.log(error,"error from navbar to save data in mongo db");
+    }
+    finally{
+      closeModel()
+    }
+    console.log("make me host");
+  }
   return (
-    <div className='fixed w-full bg-white z-10 shadow-sm'>
+    <div  className='fixed w-full bg-white z-10 shadow-sm'>
       <div className='py-4 border-b-[1px]'>
         <Container>
           <div className='flex flex-row  items-center justify-between gap-3 md:gap-0'>
@@ -29,14 +66,17 @@ const Navbar = () => {
               <div className='flex flex-row items-center gap-3'>
                 {/* Become A Host btn */}
                 <div className='hidden md:block'>
-                  {!user && (
+                  {/* {!user && ( */}
                     <button
-                      disabled={!user}
-                      className='disabled:cursor-not-allowed cursor-pointer hover:bg-neutral-100 py-3 px-4 text-sm font-semibold rounded-full  transition'
-                    >
+                      
+                      onClick={()=>setIsModalOpen(true)}
+                      className=' cursor-pointer hover:bg-neutral-100 py-3 px-4 text-sm font-semibold rounded-full  transition'
+                    > 
                       Host your home
                     </button>
-                  )}
+                    
+                  {/* )} */}
+                  <HostModal closeModal={closeModel} isOpen={isModalOpen} modalHandler={modalHandler} />
                 </div>
                 {/* Dropdown btn */}
                 <div

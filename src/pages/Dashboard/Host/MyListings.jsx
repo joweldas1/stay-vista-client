@@ -1,18 +1,22 @@
 import { Helmet } from 'react-helmet-async'
 import useAxiosCommon from '../../../hooks/useAxios'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import useAuth from '../../../hooks/useAuth';
 import LoadingSpinner from '../../../components/Shared/LoadingSpinner';
 import RoomDataRow from '../../RoomDetails/RoomDataRow';
-
+import {toast} from "react-hot-toast"
+import { useState } from 'react';
 
 
 const MyListings = () => {
   const {user} = useAuth()
   const axiosSecure =useAxiosSecure()
+  let [isOpen, setIsOpen] = useState(false)
 
+
+  // fetch data---->
   const { data: rooms, isLoading, isError, error,refetch } = useQuery({
     queryKey:['rooms',user?.email],
     queryFn:async()=>{
@@ -20,6 +24,28 @@ const MyListings = () => {
       return data
     }
   });
+  // delete api
+
+  const {mutateAsync}=useMutation({
+    mutationFn:async(id)=>{
+      const {data} = await axiosSecure.delete(`/room/${id}`) 
+      return data
+    },
+    onSuccess:(data)=>{
+      toast.success("Delete Done")
+      setIsOpen(false)
+      refetch()
+    }
+  })
+
+
+  // Delete function
+  const handleDelete=(id)=>{
+    mutateAsync(id)
+
+  }
+
+
   if (isLoading) return <LoadingSpinner/>
   if (isError) return <div>Error: {error.message}</div>;
 
@@ -87,8 +113,14 @@ const MyListings = () => {
                 </thead>
                 <tbody>
                   {
-                    rooms.map((d,idx)=>(
-                      <RoomDataRow key={idx} room={d} refetch={refetch} />
+                    rooms?.map((d,idx)=>(
+                      <RoomDataRow
+                      key={idx}
+                       room={d}
+                        refetch={refetch}
+                        handleDelete={handleDelete}
+                        isOpen={isOpen}
+                        setIsOpen={setIsOpen} />
                     ))
                   }
                 </tbody>

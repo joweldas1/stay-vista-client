@@ -54,7 +54,6 @@ console.log(error,"error from navbar to save data in mongo db");
             {/* Logo */}
             <Link to='/'>
               <img
-                // className='hidden md:block'
                 src='https://i.ibb.co/4ZXzmq5/logo.png'
                 alt='logo'
                 width='100'
